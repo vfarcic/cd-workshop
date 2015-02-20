@@ -3,7 +3,7 @@ ports:
 
 volumes:
   - '/data/nginx/sites-enabled:/etc/nginx/sites-enabled'
-  - '/data/nging/logs:/var/log/nginx'
+  - '/data/nginx/logs:/var/log/nginx'
 
 templates: [
              {src: 'services.conf.j2', dest: '/data/nginx/sites-enabled/services.conf'}
