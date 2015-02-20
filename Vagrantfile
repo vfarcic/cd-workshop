@@ -20,8 +20,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   config.vm.define :prod do |prod|
     prod.vm.network :forwarded_port, host: 2202, guest: 22, id: "ssh", auto_correct: true
+    prod.vm.network :forwarded_port, host: 9000, guest: 80
     prod.vm.network :forwarded_port, host: 9001, guest: 9001
-    prod.vm.network :forwarded_port, host: 80, guest: 80
     prod.vm.network "private_network", ip: "192.168.50.92"
     prod.vm.hostname = "prod"
   end
