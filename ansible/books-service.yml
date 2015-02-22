@@ -4,4 +4,5 @@
   roles:
     - docker
     - nginx
+    - etcd
     - books-service
