@@ -1,25 +1,70 @@
-- name: Directory is present
-  file:
-    path=/data/books-service/db
-    state=directory
-  tags: [books-service]
+- name: Colors are retrieved
+  blue_green: name=books-service blue_port=9001 green_port=9002
+  register: colors
+  tags: [books-service, books-service-tests]
+
+- debug: var=colors
+  tags: [books-service, books-service-tests]
 
 - name: Latest container is pulled
-  shell: sudo docker pull 192.168.50.91:5000/books-service
+  shell: docker pull 192.168.50.91:5000/books-service
   tags: [books-service]
 
 - name: Container is absent
   docker:
     image=192.168.50.91:5000/books-service
-    name=books-service
+    name='books-service-{{ colors.new_color }}'
     state=absent
   tags: [books-service]
 
-- name: Container is running
+- name: New container is running
   docker:
-    name=books-service
+    name=books-service-{{ colors.new_color }}
     image=192.168.50.91:5000/books-service
-    ports=9001:8080
-    volumes=/data/books-service/db:/data/db
+    ports={{ colors.new_port }}:8080
+    links=mongodb:db
     state=running
   tags: [books-service]
+
+- name: Integration tests are absent
+  docker:
+    name=books-service-tests
+    image=192.168.50.91:5000/books-service-tests
+    state=absent
+  delegate_to: 127.0.0.1
+  tags: [books-service-tests]
+
+- name: Integration tests are run
+  command: >
+    docker run --name books-service-tests
+    -e TEST_TYPE=integ
+    -e DOMAIN=http://192.168.50.92:{{ colors.new_port }}
+    -v /data/books-service-tests/target/scala-2.10:/source/target/scala-2.10
+    -v /data/.ivy2:/root/.ivy2/cache
+    192.168.50.91:5000/books-service-tests
+  delegate_to: 127.0.0.1
+  register: test_results
+  tags: [books-service-tests]
+
+- name: Stress tests are absent
+  docker:
+    name=books-stress
+    image=192.168.50.91:5000/books-stress
+    state=absent
+  delegate_to: 127.0.0.1
+  tags: [books-service-tests]
+
+- name: Stress tests are run
+  command: >
+    sudo docker run --name books-stress
+    -e DOMAIN=http://192.168.50.92:{{ colors.new_port }}
+    -e USERS=10
+    -e USERS_OVER_SECONDS=20
+    -e MAX_RESPONSE_TIME=1000
+    -e DURATION=120
+    -v /data/stress/results:/stress/results
+    192.168.50.91:5000/books-stress
+  delegate_to: 127.0.0.1
+  tags: [books-service-tests]
+
+# Continue from zdBlueGreenSwitch
