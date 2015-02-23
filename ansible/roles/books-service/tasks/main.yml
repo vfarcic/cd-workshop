@@ -3,6 +3,10 @@
   register: colors
   tags: [books-service, books-service-tests]
 
+- name: Set port
+  set_fact: colors.port={{ colors.new_port }}
+  tags: [books-service]
+
 - name: Latest container is pulled
   shell: docker pull 192.168.50.91:5000/books-service
   tags: [books-service]
@@ -96,7 +100,7 @@
   tags: [books-service-tests]
 
 - name: Revert colors
-  set_fact: colors.new_color={{ colors.current_color }}
+  set_fact: colors.port={{ colors.current_port }}
   when: test_results|failed
   tags: [books-service]
 
