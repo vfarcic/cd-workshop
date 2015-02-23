@@ -3,6 +3,7 @@ ports:
 
 volumes:
   - '/data/nginx/sites-enabled:/etc/nginx/sites-enabled'
+  - '/data/nginx/includes:/etc/nginx/includes'
   - '/data/nginx/logs:/var/log/nginx'
 
 templates: [

@@ -1,0 +1,4 @@
+container: books-service
+blue_port: 9001
+green_port: 9002
+registry: 192.168.50.91:5000

@@ -3,3 +3,6 @@
 
 [books-service]
 192.168.50.92
+
+[books-service:vars]
+ip=192.168.50.92
