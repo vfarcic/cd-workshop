@@ -4,7 +4,7 @@
   tags: [books-service, books-service-tests]
 
 - name: Set port
-  set_fact: colors.port={{ colors.new_port }}
+  set_fact: port={{ colors.new_port }}
   tags: [books-service]
 
 - name: Latest container is pulled
@@ -100,7 +100,7 @@
   tags: [books-service-tests]
 
 - name: Revert colors
-  set_fact: colors.port={{ colors.current_port }}
+  set_fact: port={{ colors.current_port }}
   when: test_results|failed
   tags: [books-service]
 
@@ -123,7 +123,7 @@
 - name: Container is stopped
   docker:
     image=192.168.50.91:5000/books-service
-    name='books-service-{{ colors.current_color }}'
+    name='books-service-{{ colors.old_color }}'
     state=stopped
   when: test_results|success
   tags: [books-service]
