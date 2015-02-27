@@ -32,7 +32,7 @@
     name=books-service-{{ colors.new_color }}
     image=192.168.50.91:5000/books-service
     ports={{ colors.new_port }}:8080
-    links=mongodb:db
+    links=books-service-db:db
     state=running
   tags: [books-service]
 
