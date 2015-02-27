@@ -1,0 +1,7 @@
+server {
+  listen 80;
+  server_name _;
+  location /api/v1/books {
+    proxy_pass http://172.17.42.1:9001/api/v1/books;
+  }
+}

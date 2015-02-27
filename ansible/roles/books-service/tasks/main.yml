@@ -1,3 +1,12 @@
+- name: DB is running
+  docker:
+    name=books-service-db
+    image=dockerfile/mongodb
+    ports=27017:27017
+    volumes=/data/books-service/db:/data/db
+    state=running
+  tags: [mongodb]
+
 - name: Colors are retrieved
   blue_green: name=books-service blue_port=9001 green_port=9002
   register: colors

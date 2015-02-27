@@ -1,0 +1,5 @@
+- hosts: services
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - nginx_with_books

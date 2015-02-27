@@ -1,0 +1,11 @@
+ports:
+  - '80:80'
+
+volumes:
+  - '/data/nginx/sites-enabled:/etc/nginx/sites-enabled'
+  - '/data/nginx/includes:/etc/nginx/includes'
+  - '/data/nginx/logs:/var/log/nginx'
+
+templates: [
+             {src: 'services.conf.j2', dest: '/data/nginx/sites-enabled/services.conf'}
+           ]

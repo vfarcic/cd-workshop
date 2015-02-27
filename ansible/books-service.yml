@@ -5,5 +5,4 @@
     - docker
     - nginx
     - etcd
-    - mongodb
     - books-service

@@ -1,8 +1,0 @@
-- name: Container is running
-  docker:
-    name=mongodb
-    image=dockerfile/mongodb
-    ports=27017:27017
-    volumes=/data/db:/data/db
-    state=running
-  tags: [mongodb]
