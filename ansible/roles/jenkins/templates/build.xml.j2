@@ -39,7 +39,7 @@
   <builders>
     <hudson.tasks.Shell>
       <command>
-# Tests & Artifacts
+# Tests &amp; Artifacts
 sudo ./build_tests.sh
 sudo ./assemble_artifacts.sh
 sudo docker tag {{ github_user }}/{{ item }}-tests {{ registry_host }}/{{ item }}-tests
