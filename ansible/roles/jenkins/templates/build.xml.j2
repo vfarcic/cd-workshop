@@ -49,6 +49,7 @@ sudo docker push {{ registry_host }}/{{ item }}-tests
 sudo docker build -t {{ github_user }}/{{ item }} .
 sudo docker tag vfarcic/{{ item }} {{ registry_host }}/{{ item }}
 sudo docker push {{ registry_host }}/{{ item }}
+      </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
