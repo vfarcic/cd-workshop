@@ -39,28 +39,11 @@
   <builders>
     <hudson.tasks.Shell>
       <command>
-# Tests & Artifacts
-sudo ./build_tests.sh
-sudo ./assemble_artifacts.sh
-sudo docker tag {{ github_user }}/{{ item }}-tests {{ registry_host }}/{{ item }}-tests
-sudo docker push {{ registry_host }}/{{ item }}-tests
-
-# Application
 sudo docker build -t {{ github_user }}/{{ item }} .
-sudo docker tag vfarcic/{{ item }} {{ registry_host }}/{{ item }}
+sudo docker tag {{ github_user }}/{{ item }} {{ registry_host }}/{{ item }}
 sudo docker push {{ registry_host }}/{{ item }}
     </hudson.tasks.Shell>
   </builders>
-  <publishers>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>{{ item }}-deployment</childProjects>
-      <threshold>
-        <name>SUCCESS</name>
-        <ordinal>0</ordinal>
-        <color>BLUE</color>
-        <completeBuild>true</completeBuild>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
-  </publishers>
+  <publishers/>
   <buildWrappers/>
 </project>

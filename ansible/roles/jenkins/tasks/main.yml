@@ -50,6 +50,21 @@
   with_items: jobs
   tags: [jenkins]
 
+- name: Test job directories are present
+  file:
+    path='{{ jenkins_directory }}/jobs/{{ item }}'
+    state=directory
+  with_items: test_jobs
+  tags: [jenkins]
+
+- name: Test jobs are present
+  template:
+    src=tests.xml.j2
+    dest='{{ jenkins_directory }}/jobs/{{ item }}/config.xml'
+    backup=yes
+  with_items: test_jobs
+  tags: [jenkins]
+
 - name: Container is running
   docker:
     name=jenkins

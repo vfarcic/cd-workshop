@@ -1,4 +1,6 @@
 jenkins_directory: /data/jenkins
+github_user: vfarcic
+registry_host: 192.168.50.91:5000
 
 directories:
   - '{{ jenkins_directory }}/plugins'
@@ -19,3 +21,6 @@ plugins:
 
 jobs:
   - books-service
+
+test_jobs:
+  - books-stress
