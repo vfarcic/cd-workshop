@@ -15,4 +15,5 @@ cd /vagrant
 git clone https://github.com/GoogleCloudPlatform/kubernetes.git
 cd /vagrant/kubernetes/cluster/ubuntu-cluster
 ./build.sh
-cp /vagrant/kubernetes/cluster/ubuntu_cluster/binaries/* /opt/bin
+mkdir -p /opt/bin
+cp /vagrant/kubernetes/cluster/ubuntu-cluster/binaries/* /opt/bin

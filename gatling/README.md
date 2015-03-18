@@ -1,0 +1,3 @@
+```bash
+vagrant up gatling
+```
