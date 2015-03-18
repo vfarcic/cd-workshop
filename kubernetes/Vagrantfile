@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.synced_folder ".", "/vagrant"
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+  end
+  #config.vm.provision :shell, inline: 'ansible-playbook /vagrant/ansible/cd.yml -c local'
+  config.vm.define :master do |master|
+    master.vm.provision "shell", path: "bootstrap_master.sh"
+    master.vm.network "private_network", ip: "192.168.50.90"
+    master.vm.hostname = "master"
+  end
+  config.vm.define :minion1 do |minion1|
+    minion1.vm.network "private_network", ip: "192.168.50.91"
+    minion1.vm.hostname = "minion1"
+  end
+  config.vm.define :minion2 do |minion2|
+    minion2.vm.network "private_network", ip: "192.168.50.92"
+    minion2.vm.hostname = "minion2"
+  end
+  config.vm.define :minion3 do |minion3|
+    minion3.vm.network "private_network", ip: "192.168.50.93"
+    minion3.vm.hostname = "minion3"
+  end
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+end
