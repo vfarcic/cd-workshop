@@ -2,7 +2,8 @@
 
 echo "Installing Desktop..."
 apt-get install -y ubuntu-desktop
-#apt-get install -y language-pack-es language-pack-gnome-es language-pack-es-base language-pack-gnome-es-base
+#apt-get install -y language-pack-es
+#apt-get install -y language-pack-gnome-es language-pack-es-base language-pack-gnome-es-base
 #setxkbmap es
 
 echo "Installing Java..."
@@ -31,3 +32,16 @@ echo "To run Gatling simulation:"
 echo "\$ cd /opt/gatling"
 echo "\$ bin/gatling.sh"
 echo "Follow instructions..."
+echo ""
+echo "An example of changed setUp:"
+echo "-- Before --"
+echo "setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)"
+echo "-- After --"
+echo "  setUp("
+echo "    scn.inject(rampUsers(5) over (10 seconds))"
+echo "  )"
+echo "  .protocols(httpProtocol)"
+echo "  .assertions("
+echo "    global.responseTime.max.lessThan(500),"
+echo "    global.failedRequests.count.is(0)"
+echo "  )"
