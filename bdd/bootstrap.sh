@@ -22,7 +22,7 @@ cd /opt/
 wget https://github.com/TechnologyConversations/TechnologyConversationsBdd/releases/download/0.5.0/bdd-assistant-0.5.0.tar.gz
 tar -xzf bdd-assistant-0.5.0.tar.gz
 rm -f bdd-assistant-0.5.0.tar.gz
-mv -f /vagrant/wikipedia.story /opt/bdd-assistant/data/stories
+cp -f /vagrant/wikipedia.story /opt/bdd-assistant/data/stories
 
 echo "BDD Assistant is installed!"
 echo " "
@@ -30,4 +30,4 @@ echo "To run the application:"
 echo "Login to the VM using user/pass vagrant/vagrant"
 echo "Open terminal (CTRL + ALT + t)"
 echo "$ cd /opt/bdd-assistant"
-echo "$ target/universal/stage/bin/tcbdd"
+echo "$ sudo target/universal/stage/bin/tcbdd"
