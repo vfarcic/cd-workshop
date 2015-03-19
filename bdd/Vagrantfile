@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.synced_folder ".", "/vagrant"
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+    v.gui = true
+  end
+  config.vm.define :bdd, primary: true do |bdd|
+    bdd.vm.network :forwarded_port, host: 9000, guest: 9000
+    bdd.vm.provision "shell", path: "bootstrap.sh"
+    bdd.vm.hostname = "bdd"
+  end
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+end

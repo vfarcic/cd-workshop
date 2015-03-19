@@ -1,4 +1,4 @@
 ```bash
 vagrant up gatling
-vagrant reload
+vagrant reload gatling # Only the first time
 ```
