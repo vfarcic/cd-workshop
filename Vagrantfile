@@ -26,6 +26,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     prod.vm.network "private_network", ip: "192.168.50.92"
     prod.vm.hostname = "prod"
   end
+  config.vm.define :swarmmaster, primary: true do |swarmmaster|
+    swarmmaster.vm.network "private_network", ip: "192.168.50.80"
+    swarmmaster.vm.hostname = "swarmmaster"
+    swarmmaster.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
+  end
+  config.vm.define :swarmnode1, primary: true do |swarmnode1|
+    swarmnode1.vm.network "private_network", ip: "192.168.50.81"
+    swarmnode1.vm.hostname = "swarmnode1"
+    swarmnode1.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
+  end
+  config.vm.define :swarmnode2, primary: true do |swarmnode2|
+    swarmnode2.vm.network "private_network", ip: "192.168.50.82"
+    swarmnode2.vm.hostname = "swarmnode2"
+    swarmnode2.vm.provider "virtualbox" do |v|
+      v.memory = 1024
+    end
+  end
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
   end
