@@ -28,6 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   config.vm.define :mesosmaster1 do |mesosmaster1|
     mesosmaster1.vm.network :forwarded_port, host: 5051, guest: 5050
+    mesosmaster1.vm.network :forwarded_port, host: 8081, guest: 8080
     mesosmaster1.vm.provision "shell", path: "bootstrap_mesos.sh"
     mesosmaster1.vm.provision "shell", path: "bootstrap_mesos_master.sh", args: "1"
     mesosmaster1.vm.provider "virtualbox" do |v|
@@ -38,6 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   config.vm.define :mesosmaster2 do |mesosmaster2|
     mesosmaster2.vm.network :forwarded_port, host: 5052, guest: 5050
+    mesosmaster2.vm.network :forwarded_port, host: 8082, guest: 8080
     mesosmaster2.vm.provision "shell", path: "bootstrap_mesos.sh"
     mesosmaster2.vm.provision "shell", path: "bootstrap_mesos_master.sh", args: "2"
     mesosmaster2.vm.provider "virtualbox" do |v|
@@ -48,6 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   config.vm.define :mesosmaster3 do |mesosmaster3|
     mesosmaster3.vm.network :forwarded_port, host: 5053, guest: 5050
+    mesosmaster3.vm.network :forwarded_port, host: 8083, guest: 8080
     mesosmaster3.vm.provision "shell", path: "bootstrap_mesos.sh"
     mesosmaster3.vm.provision "shell", path: "bootstrap_mesos_master.sh", args: "3"
     mesosmaster3.vm.provider "virtualbox" do |v|
