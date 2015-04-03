@@ -12,8 +12,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define :cd, primary: true do |cd|
     cd.vm.network :forwarded_port, host: 8080, guest: 8080
     cd.vm.network :forwarded_port, host: 5000, guest: 5000
-    cd.vm.network :forwarded_port, host: 9001, guest: 9001
-    cd.vm.network :forwarded_port, host: 9002, guest: 9002
+    cd.vm.network :forwarded_port, host: 8001, guest: 9001
+    cd.vm.network :forwarded_port, host: 8002, guest: 9002
     cd.vm.network :forwarded_port, host: 2201, guest: 22, id: "ssh", auto_correct: true
     cd.vm.network "private_network", ip: "192.168.50.91"
     cd.vm.provision "shell", path: "bootstrap.sh"
