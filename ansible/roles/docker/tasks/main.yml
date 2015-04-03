@@ -13,6 +13,20 @@
     force: yes
   tags: [docker]
 
+- name: Files are present
+  copy:
+    src: docker
+    dest: /etc/default/docker
+  register: copy_result
+  tags: [docker]
+
+- name: Docker service is restarted
+  service:
+    name: docker
+    state: restarted
+  when: copy_result|changed
+  tags: [docker]
+
 - name: Python-pip is present
   apt: name=python-pip state=present
   tags: [docker]

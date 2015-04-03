@@ -4,20 +4,6 @@
     state: directory
   tags: [registry]
 
-- name: Files are present
-  copy:
-    src: docker
-    dest: /etc/default/docker
-  register: copy_result
-  tags: [registry]
-
-- name: Docker service is restarted
-  service:
-    name: docker
-    state: restarted
-  when: copy_result|changed
-  tags: [registry]
-
 - name: Container is running
   docker:
     name=registry
