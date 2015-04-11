@@ -3,58 +3,58 @@
     name=books-service-db
     image=mongo
     ports=27017:27017
-    volumes=/data/books-service/db:/data/db
+    volumes=/data/{{ container }}/db:/data/db
     state=running
-  tags: [mongodb]
+  tags: [books-service]
 
 - name: Colors are retrieved
-  blue_green: name=books-service blue_port=9001 green_port=9002
+  blue_green: name={{ container }} blue_port={{ blue_port }} green_port={{ green_port }}
   register: colors
-  tags: [books-service, books-service-tests]
+  tags: [books-service]
 
 - name: Set port
   set_fact: port={{ colors.new_port }}
   tags: [books-service]
 
 - name: Latest container is pulled
-  shell: docker pull 192.168.50.91:5000/books-service
+  shell: docker pull 192.168.50.91:5000/{{ container }}
   tags: [books-service]
 
 - name: Container is absent
   docker:
-    image=192.168.50.91:5000/books-service
-    name='books-service-{{ colors.new_color }}'
+    image=192.168.50.91:5000/{{ container }}
+    name='{{ container }}-{{ colors.new_color }}'
     state=absent
   tags: [books-service]
 
 - name: New container is running
   docker:
-    name=books-service-{{ colors.new_color }}
-    image=192.168.50.91:5000/books-service
+    name={{ container }}-{{ colors.new_color }}
+    image=192.168.50.91:5000/{{ container }}
     ports={{ colors.new_port }}:8080
-    links=books-service-db:db
+    links={{ container }}-db:db
     state=running
   tags: [books-service]
 
 - name: Integration tests are absent
   docker:
-    name=books-service-tests
-    image=192.168.50.91:5000/books-service-tests
+    name={{ container }}-tests
+    image=192.168.50.91:5000/{{ container }}-tests
     state=absent
   delegate_to: 127.0.0.1
-  tags: [books-service-tests]
+  tags: [books-service]
 
 - name: Integration tests are run
   command: >
-    docker run --name books-service-tests
+    docker run --name {{ container }}-tests
     -e TEST_TYPE=integ
     -e DOMAIN=http://{{ ip }}:{{ colors.new_port }}
-    -v /data/books-service-tests/target/scala-2.10:/source/target/scala-2.10
+    -v /data/{{ container }}-tests/target/scala-2.10:/source/target/scala-2.10
     -v /data/.ivy2:/root/.ivy2/cache
-    192.168.50.91:5000/books-service-tests
+    192.168.50.91:5000/{{ container }}-tests
   delegate_to: 127.0.0.1
   register: test_results
-  tags: [books-service-tests]
+  tags: [books-service]
 
 - name: Stress tests are absent
   docker:
@@ -62,7 +62,7 @@
     image=192.168.50.91:5000/books-stress
     state=absent
   delegate_to: 127.0.0.1
-  tags: [books-service-tests]
+  tags: [books-service]
 
 - name: Stress tests are run
   command: >
@@ -75,10 +75,10 @@
     -v /data/stress/results:/stress/results
     192.168.50.91:5000/books-stress
   delegate_to: 127.0.0.1
-  tags: [books-service-tests]
+  tags: [books-service]
 
 - name: nginx config files are present
-  template: src=books-service.conf.j2 dest=/data/nginx/includes/books-service.conf
+  template: src={{ container }}.conf.j2 dest=/data/nginx/includes/{{ container }}.conf
   register: nginx_result
   tags: [books-service]
 
@@ -89,24 +89,24 @@
 
 - name: Integration tests are absent
   docker:
-    name=books-service-tests
-    image=192.168.50.91:5000/books-service-tests
+    name={{ container }}-tests
+    image=192.168.50.91:5000/{{ container }}-tests
     state=absent
   delegate_to: 127.0.0.1
-  tags: [books-service-tests]
+  tags: [books-service]
 
 - name: Integration tests are run
   command: >
-    docker run --name books-service-tests
+    docker run --name {{ container }}-tests
     -e TEST_TYPE=integ
     -e DOMAIN=http://{{ ip }}
-    -v /data/books-service-tests/target/scala-2.10:/source/target/scala-2.10
+    -v /data/{{ container }}-tests/target/scala-2.10:/source/target/scala-2.10
     -v /data/.ivy2:/root/.ivy2/cache
-    192.168.50.91:5000/books-service-tests
+    192.168.50.91:5000/{{ container }}-tests
   delegate_to: 127.0.0.1
   register: test_results
   ignore_errors: yes
-  tags: [books-service-tests]
+  tags: [books-service]
 
 - name: Revert colors
   set_fact: port={{ colors.current_port }}
@@ -114,7 +114,7 @@
   tags: [books-service]
 
 - name: nginx config files are present
-  template: src=books-service.conf.j2 dest=/data/nginx/includes/books-service.conf
+  template: src={{ container }}.conf.j2 dest=/data/nginx/includes/{{ container }}.conf
   when: test_results|failed
   tags: [books-service]
 
@@ -123,16 +123,21 @@
   when: test_results|failed
   tags: [books-service]
 
+- name: fail deployment
+  fail: msg=Deployment failed
+  when: test_results|failed
+  tags: [books-service]
+
 - name: Colors are changed
-  blue_green: name=books-service blue_port=9001 green_port=9002 state=changed
+  blue_green: name={{ container }} blue_port={{ blue_port }} green_port={{ green_port }} state=changed
   register: colors
   when: test_results|success
   tags: [books-service]
 
 - name: Container is stopped
   docker:
-    image=192.168.50.91:5000/books-service
-    name='books-service-{{ colors.old_color }}'
+    image=192.168.50.91:5000/{{ container }}
+    name='{{ container }}-{{ colors.old_color }}'
     state=stopped
   when: test_results|success
   tags: [books-service]
