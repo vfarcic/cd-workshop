@@ -8,9 +8,7 @@
 - name: Docker is present
   apt:
     name: lxc-docker
-    state: latest
-    update_cache: yes
-    force: yes
+    state: present
   tags: [docker]
 
 - name: Files are present
