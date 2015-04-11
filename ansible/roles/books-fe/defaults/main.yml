@@ -1,0 +1,3 @@
+container: books-fe
+blue_port: 9011
+green_port: 9012

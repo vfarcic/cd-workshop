@@ -1,91 +1,40 @@
-- name: DB is running
-  docker:
-    name=books-service-db
-    image=mongo
-    ports=27017:27017
-    volumes=/data/{{ container }}/db:/data/db
-    state=running
-  tags: [books-service]
-
 - name: Colors are retrieved
   blue_green: name={{ container }} blue_port={{ blue_port }} green_port={{ green_port }}
   register: colors
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Set port
   set_fact: port={{ colors.new_port }}
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Latest container is pulled
   shell: docker pull 192.168.50.91:5000/{{ container }}
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Container is absent
   docker:
     image=192.168.50.91:5000/{{ container }}
     name='{{ container }}-{{ colors.new_color }}'
     state=absent
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: New container is running
   docker:
     name={{ container }}-{{ colors.new_color }}
     image=192.168.50.91:5000/{{ container }}
     ports={{ colors.new_port }}:8080
-    links={{ container }}-db:db
     state=running
-  tags: [books-service]
-
-- name: Integration tests are absent
-  docker:
-    name={{ container }}-tests
-    image=192.168.50.91:5000/{{ container }}-tests
-    state=absent
-  delegate_to: 127.0.0.1
-  tags: [books-service]
-
-- name: Integration tests are run
-  command: >
-    docker run --name {{ container }}-tests
-    -e TEST_TYPE=integ
-    -e DOMAIN=http://{{ ip }}:{{ colors.new_port }}
-    -v /data/{{ container }}-tests/target/scala-2.10:/source/target/scala-2.10
-    -v /data/.ivy2:/root/.ivy2/cache
-    192.168.50.91:5000/{{ container }}-tests
-  delegate_to: 127.0.0.1
-  register: test_results
-  tags: [books-service]
-
-- name: Stress tests are absent
-  docker:
-    name=books-stress
-    image=192.168.50.91:5000/books-stress
-    state=absent
-  delegate_to: 127.0.0.1
-  tags: [books-service]
-
-- name: Stress tests are run
-  command: >
-    sudo docker run --name books-stress
-    -e DOMAIN=http://{{ ip }}:{{ colors.new_port }}
-    -e USERS=10
-    -e USERS_OVER_SECONDS=20
-    -e MAX_RESPONSE_TIME=1000
-    -e DURATION=120
-    -v /data/stress/results:/stress/results
-    192.168.50.91:5000/books-stress
-  delegate_to: 127.0.0.1
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: nginx config files are present
   template: src={{ container }}.conf.j2 dest=/data/nginx/includes/{{ container }}.conf
   register: nginx_result
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: nginx container is restarted
   shell: docker kill -s HUP nginx
   when: nginx_result|changed
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Integration tests are absent
   docker:
@@ -93,46 +42,46 @@
     image=192.168.50.91:5000/{{ container }}-tests
     state=absent
   delegate_to: 127.0.0.1
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Integration tests are run
   command: >
-    docker run --name {{ container }}-tests
-    -e TEST_TYPE=integ
-    -e DOMAIN=http://{{ ip }}
-    -v /data/{{ container }}-tests/target/scala-2.10:/source/target/scala-2.10
-    -v /data/.ivy2:/root/.ivy2/cache
-    192.168.50.91:5000/{{ container }}-tests
+    sudo docker run -t --name {{ container }}-tests
+    -v /home/vagrant/books-fe/stories:/opt/bdd/data/stories
+    vfarcic/bdd-runner-phantomjs
+    -P url=http://192.168.50.92
+    -P widthHeight=1024,768
+    --story_path data/stories/integration/**
   delegate_to: 127.0.0.1
   register: test_results
   ignore_errors: yes
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Revert colors
   set_fact: port={{ colors.current_port }}
   when: test_results|failed
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: nginx config files are present
   template: src={{ container }}.conf.j2 dest=/data/nginx/includes/{{ container }}.conf
   when: test_results|failed
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: nginx container is restarted
   shell: docker kill -s HUP nginx
   when: test_results|failed
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: fail deployment
   fail: msg=Deployment failed
   when: test_results|failed
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Colors are changed
   blue_green: name={{ container }} blue_port={{ blue_port }} green_port={{ green_port }} state=changed
   register: colors
   when: test_results|success
-  tags: [books-service]
+  tags: [books-fe]
 
 - name: Container is stopped
   docker:
@@ -140,4 +89,4 @@
     name='{{ container }}-{{ colors.old_color }}'
     state=stopped
   when: test_results|success
-  tags: [books-service]
+  tags: [books-fe]

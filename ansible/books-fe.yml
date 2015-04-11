@@ -1,0 +1,8 @@
+- hosts: books-service
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - docker
+    - nginx
+    - etcd
+    - books-fe
