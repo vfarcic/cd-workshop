@@ -17,12 +17,12 @@
   tags: [books-service]
 
 - name: Latest container is pulled
-  shell: docker pull 192.168.50.91:5000/{{ container }}
+  shell: docker pull {{ registry }}/{{ container }}
   tags: [books-service]
 
 - name: Container is absent
   docker:
-    image=192.168.50.91:5000/{{ container }}
+    image={{ registry }}/{{ container }}
     name='{{ container }}-{{ colors.new_color }}'
     state=absent
   tags: [books-service]
@@ -30,7 +30,7 @@
 - name: New container is running
   docker:
     name={{ container }}-{{ colors.new_color }}
-    image=192.168.50.91:5000/{{ container }}
+    image={{ registry }}/{{ container }}
     ports={{ colors.new_port }}:8080
     links={{ container }}-db:db
     state=running
@@ -39,7 +39,7 @@
 - name: Integration tests are absent
   docker:
     name={{ container }}-tests
-    image=192.168.50.91:5000/{{ container }}-tests
+    image={{ registry }}/{{ container }}-tests
     state=absent
   delegate_to: 127.0.0.1
   tags: [books-service]
@@ -51,7 +51,7 @@
     -e DOMAIN=http://{{ ip }}:{{ colors.new_port }}
     -v /data/{{ container }}-tests/target/scala-2.10:/source/target/scala-2.10
     -v /data/.ivy2:/root/.ivy2/cache
-    192.168.50.91:5000/{{ container }}-tests
+    {{ registry }}/{{ container }}-tests
   delegate_to: 127.0.0.1
   register: test_results
   tags: [books-service]
@@ -59,7 +59,7 @@
 - name: Stress tests are absent
   docker:
     name=books-stress
-    image=192.168.50.91:5000/books-stress
+    image={{ registry }}/books-stress
     state=absent
   delegate_to: 127.0.0.1
   tags: [books-service]
@@ -73,7 +73,7 @@
     -e MAX_RESPONSE_TIME=1000
     -e DURATION=120
     -v /data/stress/results:/stress/results
-    192.168.50.91:5000/books-stress
+    {{ registry }}/books-stress
   delegate_to: 127.0.0.1
   tags: [books-service]
 
@@ -90,7 +90,7 @@
 - name: Integration tests are absent
   docker:
     name={{ container }}-tests
-    image=192.168.50.91:5000/{{ container }}-tests
+    image={{ registry }}/{{ container }}-tests
     state=absent
   delegate_to: 127.0.0.1
   tags: [books-service]
@@ -102,7 +102,7 @@
     -e DOMAIN=http://{{ ip }}
     -v /data/{{ container }}-tests/target/scala-2.10:/source/target/scala-2.10
     -v /data/.ivy2:/root/.ivy2/cache
-    192.168.50.91:5000/{{ container }}-tests
+    {{ registry }}/{{ container }}-tests
   delegate_to: 127.0.0.1
   register: test_results
   ignore_errors: yes
@@ -136,7 +136,7 @@
 
 - name: Container is stopped
   docker:
-    image=192.168.50.91:5000/{{ container }}
+    image={{ registry }}/{{ container }}
     name='{{ container }}-{{ colors.old_color }}'
     state=stopped
   when: test_results|success
