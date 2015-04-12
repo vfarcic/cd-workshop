@@ -20,49 +20,19 @@
   with_items: plugins
   tags: [jenkins]
 
-- name: Build job directories are present
+- name: Job directories are present
   file:
-    path='{{ jenkins_directory }}/jobs/{{ item }}'
+    path='{{ jenkins_directory }}/jobs/{{ item.dest }}'
     state=directory
   with_items: jobs
   tags: [jenkins]
 
 - name: Build jobs are present
   template:
-    src=build.xml.j2
-    dest='{{ jenkins_directory }}/jobs/{{ item }}/config.xml'
+    src={{ item.src }}
+    dest='{{ jenkins_directory }}/jobs/{{ item.dest }}/config.xml'
     backup=yes
   with_items: jobs
-  tags: [jenkins]
-
-- name: Deployment job directories are present
-  file:
-    path='{{ jenkins_directory }}/jobs/{{ item }}-deployment'
-    state=directory
-  with_items: jobs
-  tags: [jenkins]
-
-- name: Deployment jobs are present
-  template:
-    src=deployment.xml.j2
-    dest='{{ jenkins_directory }}/jobs/{{ item }}-deployment/config.xml'
-    backup=yes
-  with_items: jobs
-  tags: [jenkins]
-
-- name: Test job directories are present
-  file:
-    path='{{ jenkins_directory }}/jobs/{{ item }}'
-    state=directory
-  with_items: test_jobs
-  tags: [jenkins]
-
-- name: Test jobs are present
-  template:
-    src=tests.xml.j2
-    dest='{{ jenkins_directory }}/jobs/{{ item }}/config.xml'
-    backup=yes
-  with_items: test_jobs
   tags: [jenkins]
 
 - name: Container is running
