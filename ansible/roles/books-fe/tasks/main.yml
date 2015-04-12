@@ -3,9 +3,15 @@
   register: colors
   tags: [books-fe]
 
+#- debug: var=colors
+#  tags: [books-fe]
+
 - name: Set port
   set_fact: port={{ colors.new_port }}
   tags: [books-fe]
+
+#- debug: var=port
+#  tags: [books-fe]
 
 - name: Latest container is pulled
   shell: docker pull {{ registry }}/{{ container }}
@@ -13,23 +19,26 @@
 
 - name: Container is absent
   docker:
-    image={{ registry }}/{{ container }}
-    name='{{ container }}-{{ colors.new_color }}'
-    state=absent
+    image: '{{ registry }}/{{ container }}'
+    name: '{{ container }}-{{ colors.new_color }}'
+    state: absent
   tags: [books-fe]
 
 - name: New container is running
   docker:
-    name={{ container }}-{{ colors.new_color }}
-    image={{ registry }}/{{ container }}
-    ports={{ colors.new_port }}:8080
-    state=running
+    name: '{{ container }}-{{ colors.new_color }}'
+    image: '{{ registry }}/{{ container }}'
+    ports: '{{ colors.new_port }}:8080'
+    state: running
   tags: [books-fe]
 
 - name: nginx config files are present
   template: src={{ container }}.conf.j2 dest=/data/nginx/includes/{{ container }}.conf
   register: nginx_result
   tags: [books-fe]
+
+#- debug: var=nginx_result
+#  tags: [books-fe]
 
 - name: nginx container is restarted
   shell: docker kill -s HUP nginx
@@ -38,9 +47,9 @@
 
 - name: Integration tests are absent
   docker:
-    name={{ container }}-tests
-    image={{ registry }}/{{ container }}-tests
-    state=absent
+    name: '{{ container }}-tests'
+    image: '{{ registry }}/{{ container }}-tests'
+    state: absent
   delegate_to: 127.0.0.1
   tags: [books-fe]
 
@@ -56,6 +65,9 @@
   register: test_results
   ignore_errors: yes
   tags: [books-fe]
+
+#- debug: var=test_results
+#  tags: [books-fe]
 
 - name: Revert colors
   set_fact: port={{ colors.current_port }}
@@ -73,7 +85,7 @@
   tags: [books-fe]
 
 - name: fail deployment
-  fail: msg=Deployment failed
+  fail: msg="Deployment failed"
   when: test_results|failed
   tags: [books-fe]
 
@@ -83,10 +95,13 @@
   when: test_results|success
   tags: [books-fe]
 
+#- debug: var=colors
+#  tags: [books-fe]
+
 - name: Container is stopped
   docker:
-    image={{ registry }}/{{ container }}
-    name='{{ container }}-{{ colors.old_color }}'
-    state=stopped
+    image: '{{ registry }}/{{ container }}'
+    name: '{{ container }}-{{ colors.old_color }}'
+    state: stopped
   when: test_results|success
   tags: [books-fe]
