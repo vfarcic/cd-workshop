@@ -19,8 +19,8 @@ plugins:
   - git-client.hpi
   - github-api.hpi
 
-jobs:
-  - books-service
-
-test_jobs:
-  - books-stress
+jobs: [
+  { src: 'build.xml.j2', dest: 'books-service' },
+  { src: 'deployment.xml.j2', dest: 'books-service-deployment' },
+  { src: 'tests.xml.j2', dest: 'books-stress' }
+]
