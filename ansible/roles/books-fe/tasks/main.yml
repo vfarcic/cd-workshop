@@ -74,6 +74,9 @@
   when: test_results|failed
   tags: [books-fe]
 
+#- debug: var=port
+#  tags: [books-fe]
+
 - name: nginx config files are present
   template: src={{ container }}.conf.j2 dest=/data/nginx/includes/{{ container }}.conf
   when: test_results|failed
