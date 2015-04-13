@@ -5,14 +5,14 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.10">
-      <projectUrl>https://github.com/{{ github_user }}/{{ item.dest }}/</projectUrl>
+      <projectUrl>https://github.com/{{ github_user }}/{{ item.name }}/</projectUrl>
     </com.coravy.hudson.plugins.github.GithubProjectProperty>
   </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.4">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>https://github.com/{{ github_user }}/{{ item.dest }}</url>
+        <url>https://github.com/{{ github_user }}/{{ item.name }}</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -39,9 +39,9 @@
   <builders>
     <hudson.tasks.Shell>
       <command>
-sudo docker build -t {{ github_user }}/{{ item.dest }} .
-sudo docker tag -f {{ github_user }}/{{ item.dest }} {{ registry_host }}/{{ item.dest }}
-sudo docker push {{ registry_host }}/{{ item.dest }}
+sudo docker build -t {{ github_user }}/{{ item.name }} .
+sudo docker tag -f {{ github_user }}/{{ item.name }} {{ registry_host }}/{{ item.name }}
+sudo docker push {{ registry_host }}/{{ item.name }}
       </command>
     </hudson.tasks.Shell>
   </builders>

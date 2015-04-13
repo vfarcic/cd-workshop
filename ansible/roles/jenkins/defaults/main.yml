@@ -20,7 +20,7 @@ plugins:
   - github-api.hpi
 
 jobs: [
-  { src: 'build.xml.j2', dest: 'books-service' },
-  { src: 'deployment.xml.j2', dest: 'books-service-deployment' },
-  { src: 'tests.xml.j2', dest: 'books-stress' }
+  { src: 'build.xml.j2', dest: 'books-service', name: 'books-service' },
+  { src: 'deployment.xml.j2', dest: 'books-service-deployment', name: 'books-service' },
+  { src: 'tests.xml.j2', dest: 'books-stress', name: 'books-stress' }
 ]
