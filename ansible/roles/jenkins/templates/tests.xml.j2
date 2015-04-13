@@ -40,7 +40,7 @@
     <hudson.tasks.Shell>
       <command>
 sudo docker build -t {{ github_user }}/{{ item.dest }} .
-sudo docker tag {{ github_user }}/{{ item.dest }} {{ registry_host }}/{{ item.dest }}
+sudo docker tag -f {{ github_user }}/{{ item.dest }} {{ registry_host }}/{{ item.dest }}
 sudo docker push {{ registry_host }}/{{ item.dest }}
       </command>
     </hudson.tasks.Shell>

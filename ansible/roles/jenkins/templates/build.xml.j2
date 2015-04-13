@@ -42,12 +42,12 @@
 # Tests &amp; Artifacts
 sudo ./build_tests.sh
 sudo ./assemble_artifacts.sh
-sudo docker tag {{ github_user }}/{{ item.dest }}-tests {{ registry_host }}/{{ item.dest }}-tests
+sudo docker tag -f {{ github_user }}/{{ item.dest }}-tests {{ registry_host }}/{{ item.dest }}-tests
 sudo docker push {{ registry_host }}/{{ item.dest }}-tests
 
 # Application
 sudo docker build -t {{ github_user }}/{{ item.dest }} .
-sudo docker tag vfarcic/{{ item.dest }} {{ registry_host }}/{{ item.dest }}
+sudo docker tag -f vfarcic/{{ item.dest }} {{ registry_host }}/{{ item.dest }}
 sudo docker push {{ registry_host }}/{{ item.dest }}
       </command>
     </hudson.tasks.Shell>
