@@ -5,14 +5,14 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.10">
-      <projectUrl>https://github.com/{{ github_user }}/{{ item }}/</projectUrl>
+      <projectUrl>https://github.com/{{ github_user }}/{{ item.dest }}/</projectUrl>
     </com.coravy.hudson.plugins.github.GithubProjectProperty>
   </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.4">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>https://github.com/{{ github_user }}/{{ item }}</url>
+        <url>https://github.com/{{ github_user }}/{{ item.dest }}</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -42,19 +42,19 @@
 # Tests &amp; Artifacts
 sudo ./build_tests.sh
 sudo ./assemble_artifacts.sh
-sudo docker tag {{ github_user }}/{{ item }}-tests {{ registry_host }}/{{ item }}-tests
-sudo docker push {{ registry_host }}/{{ item }}-tests
+sudo docker tag {{ github_user }}/{{ item.dest }}-tests {{ registry_host }}/{{ item.dest }}-tests
+sudo docker push {{ registry_host }}/{{ item.dest }}-tests
 
 # Application
-sudo docker build -t {{ github_user }}/{{ item }} .
-sudo docker tag vfarcic/{{ item }} {{ registry_host }}/{{ item }}
-sudo docker push {{ registry_host }}/{{ item }}
+sudo docker build -t {{ github_user }}/{{ item.dest }} .
+sudo docker tag vfarcic/{{ item.dest }} {{ registry_host }}/{{ item.dest }}
+sudo docker push {{ registry_host }}/{{ item.dest }}
       </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
     <hudson.tasks.BuildTrigger>
-      <childProjects>{{ item }}-deployment</childProjects>
+      <childProjects>{{ item.dest }}-deployment</childProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
