@@ -1,6 +1,6 @@
 - name: nginx container is running
   docker:
-    image: dockerfile/nginx
+    image: nginx
     name: nginx
     state: running
     ports: "{{ ports }}"
